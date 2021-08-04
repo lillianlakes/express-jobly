@@ -87,6 +87,84 @@ describe("findAll", function () {
   });
 });
 
+/************************************** search with filter */
+
+describe("filter", function () {
+  test("works: correct name filter", async function () {
+    let companies = await Company.filter({name: "C"});
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  });
+
+  test("works: correct employee filters", async function () {
+    let companies = await Company.filter({minEmployees: 2, maxEmployees: 3});
+    expect(companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  });
+
+  test("does not work: min greater than max", async function () {
+    try {
+      let companies = await Company.filter({minEmployees:3, maxEmployees:2});
+    } catch (err) {
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("Min employees cannot be greater than the max employees.");
+    }
+  });
+
+  test("does not work: incorrect filter fields", async function () {
+    try {
+      let companies = await Company.filter({filter: "hello"});
+    } catch (err) {
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("Incorrect filtering field");
+    }
+  });
+
+  test("does not work: company not found", async function () {
+    try {
+      let companies = await Company.filter({name: "C4"});
+    } catch (err) {
+      expect(err.status).toEqual(404);
+      expect(err.message).toEqual("Company not found");
+    }
+  });
+});
+
 /************************************** get */
 
 describe("get", function () {

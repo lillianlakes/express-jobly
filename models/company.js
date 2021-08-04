@@ -88,7 +88,7 @@ class Company {
         [...values]);
     const companies = companiesRes.rows;
 
-    if (!companies) throw new NotFoundError(`Company not found`);
+    if (companies.length < 1) throw new NotFoundError(`Company not found`);
 
     return companies;
   }
@@ -181,7 +181,7 @@ class Company {
    * }
    */
   static sqlForFilter(dataToFilter) {
-    console.log("########", dataToFilter);
+    // console.log("########", dataToFilter);
     const jsToSqlWhere = { name: `name ILIKE` , minEmployees:  `num_employees >=`, maxEmployees:  `num_employees <=` }
     const keys = Object.keys(dataToFilter);
 
@@ -194,6 +194,13 @@ class Company {
     // {name: 'net' , minEmployees:  10 } => ['name ILIKE $1', 'num_employees >= $2']
     const cols = keys.map((colName, idx) => `${jsToSqlWhere[colName]} $${idx + 1}`);
   
+    // console.log("########", dataToFilter.minEmployees, dataToFilter.maxEmployees);
+    if (Number(dataToFilter.minEmployees) > Number(dataToFilter.maxEmployees)) {
+      // console.log("INSIDE FOR ERROR");
+      let message = 'Min employees cannot be greater than the max employees.'
+      throw new BadRequestError(message);
+    } 
+
     if (dataToFilter.name) {
       dataToFilter.name = `%${dataToFilter.name}%`;
     }
