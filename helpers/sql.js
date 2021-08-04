@@ -30,4 +30,59 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
+
+
+function sqlForFilter(dataToFilter) {
+  const jsToSqlWhere = { name: `name ILIKE` , minEmployees:  `num_employees >=`, maxEmployees:  `num_employees <=` }
+  const keys = Object.keys(dataToFilter);
+  
+  // {name: 'net' , minEmployees:  10 } => ['name ILIKE $1', 'num_employees >= $2']
+  const cols = keys.map((colName, idx) => `${jsToSqlWhere[colName]} $${idx + 1}`);
+
+  const objValuesToFilter = Object.values(dataToFilter);
+
+  if (name in keys) {
+    
+  }
+
+  return {
+    whereCols: cols.join(" AND "),
+    values: Object.values(dataToFilter),
+  };
+}
+
+
+
+if (dataToFilter.name) ---> `%${name}%`
+/*
+Only name
+  
+  WHERE name LIKE $1`, [`%${filterName}%`]
+
+Only minEmployees
+
+  WHERE num_employees >= $1`, [filterMinEmployees]
+
+Only maxEmployees
+
+  WHERE num_employees <= $1`, [filterMaxEmployees]
+
+name, minEmployees
+
+  WHERE name LIKE $1 AND num_employees >= $2`, [`%${filterName}%`, filterMinEmployees]
+
+name, maxemployees
+
+  WHERE name LIKE $1 AND num_employees <= $2`, [`%${filterName}%`, filterMaxEmployees]
+
+minEmployees, maxEmployees
+
+  WHERE num_employees >= $1 AND num_employees <= $2`, [filterMinEmployees, filterMaxEmployees] 
+
+name, minEmployees, maxEmployees
+
+  WHERE name LIKE $1 AND num_employees >= $2` AND num_employees <= $3, [`%${filterName}%`, filterMinEmployees, filterMaxEmployees] 
+
+*/
+
 module.exports = { sqlForPartialUpdate };

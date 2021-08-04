@@ -87,10 +87,10 @@ class Company {
               num_employees AS "numEmployees",
               logo_url AS "logoUrl"
         FROM companies
-        WHERE ${setCol}
+        WHERE ${setCols}
         ORDER BY name`,
         [...values]);
-    const companies = result.rows;
+    const companies = companiesRes.rows;
 
     if (!companies) throw new NotFoundError(`Company not found`);
 
