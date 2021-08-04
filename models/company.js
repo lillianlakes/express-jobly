@@ -74,11 +74,7 @@ class Company {
    */
 
   static async filter(data) {
-    const { setCols, values } = sqlForPartialUpdate(
-      data,
-      {
-        numEmployees: "num_employees",
-      });
+    const { whereCols, values } = this.sqlForFilter(data);
     
     const companiesRes = await db.query(
       `SELECT handle,
@@ -87,7 +83,7 @@ class Company {
               num_employees AS "numEmployees",
               logo_url AS "logoUrl"
         FROM companies
-        WHERE ${setCols}
+        WHERE ${whereCols}
         ORDER BY name`,
         [...values]);
     const companies = companiesRes.rows;
@@ -172,6 +168,40 @@ class Company {
     const company = result.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+  }
+
+  /** Helper function to filter companies
+   * given an object like { name, maxEmployees, minEmployees}
+   * 
+   * if object had other keys beside name, maxEmployees, minEmployees, throws an error
+   * 
+   * returns {
+   *  whereCols: is a string separated by AND
+   *  values: is the values of the given object
+   * }
+   */
+  static sqlForFilter(dataToFilter) {
+    console.log("########", dataToFilter);
+    const jsToSqlWhere = { name: `name ILIKE` , minEmployees:  `num_employees >=`, maxEmployees:  `num_employees <=` }
+    const keys = Object.keys(dataToFilter);
+
+    for (let key of keys) {
+      if (!jsToSqlWhere[key]) {
+        throw new BadRequestError("Incorrect filtering field");
+      }
+    }
+    
+    // {name: 'net' , minEmployees:  10 } => ['name ILIKE $1', 'num_employees >= $2']
+    const cols = keys.map((colName, idx) => `${jsToSqlWhere[colName]} $${idx + 1}`);
+  
+    if (dataToFilter.name) {
+      dataToFilter.name = `%${dataToFilter.name}%`;
+    }
+  
+    return {
+      whereCols: cols.join(" AND "),
+      values: Object.values(dataToFilter),
+    };
   }
 }
 

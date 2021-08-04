@@ -30,30 +30,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-
-
-function sqlForFilter(dataToFilter) {
-  const jsToSqlWhere = { name: `name ILIKE` , minEmployees:  `num_employees >=`, maxEmployees:  `num_employees <=` }
-  const keys = Object.keys(dataToFilter);
-  
-  // {name: 'net' , minEmployees:  10 } => ['name ILIKE $1', 'num_employees >= $2']
-  const cols = keys.map((colName, idx) => `${jsToSqlWhere[colName]} $${idx + 1}`);
-
-  const objValuesToFilter = Object.values(dataToFilter);
-
-  if (name in keys) {
-    
-  }
-
-  return {
-    whereCols: cols.join(" AND "),
-    values: Object.values(dataToFilter),
-  };
-}
-
-
-
-if (dataToFilter.name) ---> `%${name}%`
+// if (dataToFilter.name) ---> `%${name}%`
 /*
 Only name
   

@@ -47,19 +47,19 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  let filterName = req.query.name;
+  // let filterName = req.query.name;
   let filterMinEmployees = req.query.minEmployees;
   let filterMaxEmployees = req.query.maxEmployees;
   let companies;
 
-  if (!filterName || !filterMinEmployees || !filterMaxEmployees) {
+  if (!req.query) {
     companies = await Company.findAll();
   } else {
     if (filterMinEmployees > filterMaxEmployees) {
       let message = 'Min employees cannot be greater than the max employees.'
       throw new BadRequestError(message);
     } 
-    companies = await Company. ;
+    companies = await Company.filter(req.query);
   }
 
   return res.json({ companies });
