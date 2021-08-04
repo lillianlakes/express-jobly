@@ -66,6 +66,37 @@ class Company {
     return companiesRes.rows;
   }
 
+  /** Filter all companies.
+   * 
+   * Given name or numEmployees
+   * 
+   * Returns [{ handle, name, description, numEmployees, logoUrl}, ...]
+   */
+
+  static async filter(data) {
+    const { setCols, values } = sqlForPartialUpdate(
+      data,
+      {
+        numEmployees: "num_employees",
+      });
+    
+    const companiesRes = await db.query(
+      `SELECT handle,
+              name,
+              description,
+              num_employees AS "numEmployees",
+              logo_url AS "logoUrl"
+        FROM companies
+        WHERE ${setCol}
+        ORDER BY name`,
+        [...values]);
+    const companies = result.rows;
+
+    if (!companies) throw new NotFoundError(`Company not found`);
+
+    return companies;
+  }
+
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }
