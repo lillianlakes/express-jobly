@@ -15,16 +15,19 @@ class Job {
    *
    * */
   static async create( { title, salary, equity, company_handle }) {
-    const result = await db.query(
-      `INSERT INTO jobs(title, salary, equity, company_handle)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING id, title, salary, equity, company_handle`,
-        [title, salary, equity, company_handle],
-    );
+    let result;
+    try {
+      result = await db.query(
+        `INSERT INTO jobs(title, salary, equity, company_handle)
+          VALUES ($1, $2, $3, $4)
+          RETURNING id, title, salary, equity, company_handle`,
+          [title, salary, equity, company_handle],
+      );
+    } catch (err) {
+      throw new BadRequestError("The job could not be created.");
+    }
   
     const job = result.rows[0];
-
-    if (!job) throw new BadRequestError(`The job could not be created.`);
 
     return job;
   }
@@ -95,7 +98,7 @@ class Job {
    */
 
   static async update(id, data) {
-    const { setCols, values } = sqlForPartialUpdate(data);
+    const { setCols, values } = sqlForPartialUpdate(data, {});
     const idVarIdx = "$" + (values.length + 1);
 
     const querySql = `
@@ -145,7 +148,13 @@ class Job {
     const jsToSqlWhere = { title: `title ILIKE` , minSalary: `salary >=`};
 
     if (dataToFilter.hasEquity !== undefined) {
-      if (dataToFilter.hasEquity) jsToSqlWhere.hasEquity = `equity > 0`;
+      //TODO why instanceof not working???
+      // console.log("TYPEOF DATATOFILTER", typeof dataToFilter.hasEquity);
+      // console.log("DATATOFILTER", (dataToFilter.hasEquity instanceof Boolean));
+      if (typeof dataToFilter.hasEquity !== "boolean") {
+        throw new BadRequestError("hasEquity must be true or false");
+      }
+      if (dataToFilter.hasEquity === true) jsToSqlWhere.hasEquity = `equity > 0`;
       delete dataToFilter.hasEquity;
     }
   
