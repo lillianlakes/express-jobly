@@ -11,6 +11,7 @@ const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const companyFilterSchema = require("../schemas/companyFilter.json");
 
 const router = new express.Router();
 
@@ -37,7 +38,9 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 
 /** GET /  =>
  *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
- *
+ * 
+ * JSONschema to check query string
+ * 
  * Can filter on provided search filters:
  * - minEmployees
  * - maxEmployees
@@ -45,31 +48,22 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  *
  * Authorization required: none
  */
-
-// TODO: even though doing data validation in the method, good to integrate JSON schema validation.. where if user
-// adds incorrect input, then kick them out.... check 'req.query' and then pass in an object to the validator
-
-// TODO: make sure than minEmployees and maxEmployees to numbers... better to do the conversion in the route before 
-// feeding to the filter query.... if everything passes, destructure minEmployees and maxEmployees out of req.query
-
-// NOTE: 
-/* 1. JSON Schema validation
-2. pass in req.query
-3. if no errors, next: destructure minEmployees and maxEmployees out of req.query
-4. convert to numbers
-5. then also pull out name and pass all three into filter function
-6. add to JSON schema... min and max employees can't be less than 0
-
-// also don't need if/else since changed the model
-// we now need to pass in an object to .findAll
-*/
 router.get("/", async function (req, res, next) {
-  let companies;
-  if (Object.keys(req.query).length < 1) {
-    companies = await Company.findAll();
-  } else {
-    companies = await Company.filter(req.query);
+  let q = {...req.query};
+  if (q.minEmployees){
+    q.minEmployees = Number(q.minEmployees);
   }
+  if (q.maxEmployees) {
+    q.maxEmployees = Number(q.maxEmployees);
+  }
+  const validator = jsonschema.validate(q, companyFilterSchema);
+
+  if (!validator.valid) {
+    const errs = validator.errors.map(e => e.stack);
+    throw new BadRequestError(errs);
+  }
+
+  let companies = await Company.findAll(q);
 
   return res.json({ companies });
 });

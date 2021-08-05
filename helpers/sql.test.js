@@ -1,13 +1,4 @@
-const {
-  NotFoundError,
-  BadRequestError,
-  UnauthorizedError,
-} = require("../expressError");
-const { findAll } = require("../models/company");
 const { sqlForPartialUpdate } = require("./sql");
-
-//TODO: why console.error from app.js --> we got the console.error because it's logging that the error
-// happened, but we caught it.
 
 describe("sqlForPartialUpdate", function () {
   test("works: keys available", function () {

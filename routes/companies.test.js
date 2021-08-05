@@ -111,6 +111,29 @@ describe("GET /companies", function () {
           ],
     });
   });
+  
+  test("filter employees ok for anon", async function () {
+    const resp = await request(app).get("/companies?minEmployees=1&maxEmployees=2");
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c1",
+              name: "C1",
+              description: "Desc1",
+              numEmployees: 1,
+              logoUrl: "http://c1.img",
+            },
+            {
+              handle: "c2",
+              name: "C2",
+              description: "Desc2",
+              numEmployees: 2,
+              logoUrl: "http://c2.img",
+            }
+          ],
+    });
+  });
 
   test("filter not ok for invalid query", async function () {
     const resp = await request(app).get("/companies?size=1000");

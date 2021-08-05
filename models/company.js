@@ -50,40 +50,44 @@ class Company {
   }
 
   /** Find all companies.
+   * 
+   * if data is not empty, filters the search otherwise finds all companies
+   * data = from query string
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-// TODO: add an optional parameter e.g. 'data = {}'. That means someone can call the function with or without something.
-// TODO: update docstrings
-
-  // static async findAll() {
-  //   const companiesRes = await db.query(
-  //       `SELECT handle,
-  //               name,
-  //               description,
-  //               num_employees AS "numEmployees",
-  //               logo_url AS "logoUrl"
-  //          FROM companies
-  //          ORDER BY name`);
-  //   return companiesRes.rows;
-  // }
-
   static async findAll(data = {}) {
     const { whereCols, values } = this._sqlForFilter(data);
-
+    
     const companiesRes = await db.query(
-        `SELECT handle,
-                name,
-                description,
-                num_employees AS "numEmployees",
-                logo_url AS "logoUrl"
-           FROM companies
-           ${whereCols}
-           ORDER BY name`,
-           [...values]);
+      `SELECT handle,
+      name,
+      description,
+      num_employees AS "numEmployees",
+      logo_url AS "logoUrl"
+      FROM companies
+      ${whereCols}
+      ORDER BY name`,
+      [...values]);
+    const companies = companiesRes.rows;
+
+    if (companies.length < 1) throw new NotFoundError(`Company not found`);
+
     return companiesRes.rows;
-  }
+  }    
+    //OLD VERSION OF findALL()
+      // static async findAll() {
+      //   const companiesRes = await db.query(
+      //       `SELECT handle,
+      //               name,
+      //               description,
+      //               num_employees AS "numEmployees",
+      //               logo_url AS "logoUrl"
+      //          FROM companies
+      //          ORDER BY name`);
+      //   return companiesRes.rows;
+      // }
 
   /** Filter all companies.
    * 
@@ -95,7 +99,6 @@ class Company {
    * Throws NotFoundError if not found.
    */
 
-// TODO: filter method is very similar to findall(). Better to tweak findAll() instead.
 
   // static async filter(data) {
   //   const { whereCols, values } = this._sqlForFilter(data);
@@ -223,7 +226,7 @@ class Company {
     // {name: 'net' , minEmployees:  10 } => ['name ILIKE $1', 'num_employees >= $2']
     const cols = keys.map((colName, idx) => `${jsToSqlWhere[colName]} $${idx + 1}`);
   
-    if (Number(dataToFilter.minEmployees) > Number(dataToFilter.maxEmployees)) {
+    if (dataToFilter.minEmployees > dataToFilter.maxEmployees) {
       let message = 'Min employees cannot be greater than the max employees.'
       throw new BadRequestError(message);
     } 

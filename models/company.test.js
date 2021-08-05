@@ -87,12 +87,11 @@ describe("findAll", function () {
   });
 });
 
-/************************************** search with filter */
+/************************************** findAll with filtering */
 
-// TODO: change these to find all since changed the model
 describe("filter", function () {
   test("works: correct name filter", async function () {
-    let companies = await Company.filter({name: "C"});
+    let companies = await Company.findAll({name: "C"});
     expect(companies).toEqual([
       {
         handle: "c1",
@@ -119,7 +118,7 @@ describe("filter", function () {
   });
 
   test("works: case-insensitive filter", async function () {
-    let companies = await Company.filter({name: "c"});
+    let companies = await Company.findAll({name: "c"});
     expect(companies).toEqual([
       {
         handle: "c1",
@@ -146,7 +145,7 @@ describe("filter", function () {
   });
 
   test("works: correct employee filters", async function () {
-    let companies = await Company.filter({minEmployees: 2, maxEmployees: 3});
+    let companies = await Company.findAll({minEmployees: 2, maxEmployees: 3});
     expect(companies).toEqual([
       {
         handle: "c2",
@@ -165,10 +164,10 @@ describe("filter", function () {
     ]);
   });
 
-  // add fail method right below the line throwing an error... ALWAYS (next three...)
   test("does not work: min greater than max", async function () {
     try {
-      await Company.filter({minEmployees:3, maxEmployees:2});
+      await Company.findAll({minEmployees:3, maxEmployees:2});
+      fail();
     } catch (err) {
       expect(err.status).toEqual(400);
       expect(err.message).toEqual("Min employees cannot be greater than the max employees.");
@@ -177,7 +176,8 @@ describe("filter", function () {
 
   test("does not work: incorrect filter fields", async function () {
     try {
-      await Company.filter({filter: "hello"});
+      await Company.findAll({filter: "hello"});
+      fail();
     } catch (err) {
       expect(err.status).toEqual(400);
       expect(err.message).toEqual("Incorrect filtering field");
@@ -186,7 +186,8 @@ describe("filter", function () {
 
   test("does not work: company not found", async function () {
     try {
-      await Company.filter({name: "C4"});
+      await Company.findAll({name: "C4"});
+      fail();
     } catch (err) {
       expect(err.status).toEqual(404);
       expect(err.message).toEqual("Company not found");
@@ -194,7 +195,50 @@ describe("filter", function () {
   });
 });
 
-// TODO: write tests for filter helper function... the more tests at the lower level, the easier 
+/************************************** _sqlForFilter helper function */
+
+describe("sqlForFilter", function () {
+  test("error: incorrect filtering fields", function () {
+    let data = { filter: "hello world" };
+    
+    try {
+      Company._sqlForFilter(data);
+      fail();
+    } catch (err) {
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("Incorrect filtering field");
+    }
+  });
+  
+  test("error: min employees greater than max employees", function () {
+    let data = { minEmployees: 3, maxEmployees:2 };
+    
+    try {
+      Company._sqlForFilter(data);
+      fail();
+    } catch (err) {
+      expect(err.status).toEqual(400);
+      expect(err.message).toEqual("Min employees cannot be greater than the max employees.");
+    }
+  });
+  
+  test("correct output, 1 key", function () {
+    let data = { name: "testName" };
+    let resp = Company._sqlForFilter(data);
+
+    expect(resp.whereCols).toEqual("WHERE name ILIKE $1");
+    expect(resp.values).toEqual(["%testName%"]);
+  });
+  
+  test("correct output, more than 1 key", function () {
+    let data = { name: "testName", minEmployees: 10 };
+    let resp = Company._sqlForFilter(data);
+
+    expect(resp.whereCols).toEqual("WHERE name ILIKE $1 AND num_employees >= $2");
+    expect(resp.values).toEqual(["%testName%", 10]);
+  });
+});
+
 
 /************************************** get */
 
