@@ -90,7 +90,7 @@ describe("ensureLoggedInAsAdmin", function () {
 });
 
 describe("ensureCorrectUserOrAdmin", function () {
-  test("works", function () {
+  test("works, correct user but not admin", function () {
     expect.assertions(1);
     const req = { params: { username: "test" } };
     const res = { locals: { user: { username: "test", isAdmin: false } } };

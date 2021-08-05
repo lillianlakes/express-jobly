@@ -46,7 +46,7 @@ describe("POST /companies", function () {
         .post("/companies")
         .send(newCompany)
         .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
+    expect(resp.statusCode).toEqual(403);
   });
 
   test("bad request with missing data", async function () {
@@ -199,7 +199,7 @@ describe("GET /companies/:handle", function () {
 /************************************** PATCH /companies/:handle */
 
 describe("PATCH /companies/:handle", function () {
-  test("works for users", async function () {
+  test("works for admin", async function () {
     const resp = await request(app)
         .patch(`/companies/c1`)
         .send({
@@ -224,7 +224,7 @@ describe("PATCH /companies/:handle", function () {
           name: "C1-new",
         })
         .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
+    expect(resp.statusCode).toEqual(403);
   });
 
   test("unauth for anon", async function () {
@@ -270,7 +270,7 @@ describe("PATCH /companies/:handle", function () {
 /************************************** DELETE /companies/:handle */
 
 describe("DELETE /companies/:handle", function () {
-  test("works for users", async function () {
+  test("works for admin", async function () {
     const resp = await request(app)
         .delete(`/companies/c1`)
         .set("authorization", `Bearer ${u1Token}`);
@@ -281,7 +281,7 @@ describe("DELETE /companies/:handle", function () {
     const resp = await request(app)
         .delete(`/companies/c1`)
         .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
+    expect(resp.statusCode).toEqual(403);
   });
 
   test("unauth for anon", async function () {

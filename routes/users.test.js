@@ -71,7 +71,7 @@ describe("POST /users", function () {
     });
   });
   
-  test("unauth for non admin: create user", async function () {
+  test("forbidden for non admin: create user", async function () {
     const resp = await request(app)
         .post("/users")
         .send({
@@ -83,7 +83,7 @@ describe("POST /users", function () {
           isAdmin: false,
         })
         .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
+    expect(resp.statusCode).toEqual(403);
   });
 
   test("unauth for anon", async function () {
@@ -108,6 +108,8 @@ describe("POST /users", function () {
         })
         .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(400);
+    console.log("#############",resp.statusMessage);
+    // expect(resp.message).toEqual({ message = "Bad Request" });
   });
 
   test("bad request if invalid data", async function () {
@@ -158,6 +160,13 @@ describe("GET /users", function () {
         },
       ],
     });
+  });
+  
+  test("forbidden for non admin", async function () {
+    const resp = await request(app)
+        .get("/users")
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(403);
   });
 
   test("unauth for anon", async function () {
@@ -225,6 +234,13 @@ describe("GET /users/:username", function () {
       },
     });
   });
+  
+  test("forbidden non admin user try get other user", async function () {
+    const resp = await request(app)
+        .get(`/users/u3`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(403);
+  });
 
   test("unauth for anon", async function () {
     const resp = await request(app)
@@ -261,7 +277,7 @@ describe("PATCH /users/:username", () => {
     });
   });
   
-  test("works for admin path other user", async function () {
+  test("works for admin patch other user", async function () {
     const resp = await request(app)
         .patch(`/users/u3`)
         .send({
@@ -295,6 +311,16 @@ describe("PATCH /users/:username", () => {
         isAdmin: false,
       },
     });
+  });
+  
+  test("forbidden for non admin user patch other user", async function () {
+    const resp = await request(app)
+        .patch(`/users/u3`)
+        .send({
+          firstName: "Newew",
+        })
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(403);
   });
 
   test("unauth for anon", async function () {
@@ -369,6 +395,13 @@ describe("DELETE /users/:username", function () {
         .delete(`/users/u2`)
         .set("authorization", `Bearer ${u2Token}`);
     expect(resp.body).toEqual({ deleted: "u2" });
+  });
+  
+  test("forbidden for non admin user delete other user", async function () {
+    const resp = await request(app)
+        .delete(`/users/u3`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(403);
   });
 
   test("unauth for anon", async function () {
