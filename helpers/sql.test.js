@@ -1,3 +1,4 @@
+"use strict";
 const { sqlForPartialUpdate } = require("./sql");
 
 describe("sqlForPartialUpdate", function () {

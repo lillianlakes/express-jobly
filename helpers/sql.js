@@ -1,3 +1,4 @@
+"user strict";
 const { BadRequestError } = require("../expressError");
 
 /**
