@@ -68,8 +68,6 @@ describe("POST /companies", function () {
 describe("GET /companies", function () {
   test("ok for anon", async function () {
     const resp = await request(app).get("/companies");
-    console.log("@@@@@@@@@@", resp.body);
-    console.log("###########", resp);
     expect(resp.body).toEqual({
       companies:
           [
@@ -96,6 +94,27 @@ describe("GET /companies", function () {
             },
           ],
     });
+  });
+
+  test("filter ok for anon", async function () {
+    const resp = await request(app).get("/companies?name=c1");
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c1",
+              name: "C1",
+              description: "Desc1",
+              numEmployees: 1,
+              logoUrl: "http://c1.img",
+            }
+          ],
+    });
+  });
+
+  test("filter not ok for invalid query", async function () {
+    const resp = await request(app).get("/companies?size=1000");
+    expect(resp.statusCode).toEqual(400);
   });
 
   test("fails: test next() handler", async function () {

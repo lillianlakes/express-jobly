@@ -54,7 +54,24 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll() {
+// TODO: add an optional parameter e.g. 'data = {}'. That means someone can call the function with or without something.
+// TODO: update docstrings
+
+  // static async findAll() {
+  //   const companiesRes = await db.query(
+  //       `SELECT handle,
+  //               name,
+  //               description,
+  //               num_employees AS "numEmployees",
+  //               logo_url AS "logoUrl"
+  //          FROM companies
+  //          ORDER BY name`);
+  //   return companiesRes.rows;
+  // }
+
+  static async findAll(data = {}) {
+    const { whereCols, values } = this._sqlForFilter(data);
+
     const companiesRes = await db.query(
         `SELECT handle,
                 name,
@@ -62,36 +79,44 @@ class Company {
                 num_employees AS "numEmployees",
                 logo_url AS "logoUrl"
            FROM companies
-           ORDER BY name`);
+           ${whereCols}
+           ORDER BY name`,
+           [...values]);
     return companiesRes.rows;
   }
 
   /** Filter all companies.
    * 
-   * Given name or numEmployees
+   * Given object with optional filtering criteria:
+   *  { name, minEmployees, maxEmployees }
    * 
    * Returns [{ handle, name, description, numEmployees, logoUrl}, ...]
+   * 
+   * Throws NotFoundError if not found.
    */
 
-  static async filter(data) {
-    const { whereCols, values } = this.sqlForFilter(data);
+// TODO: filter method is very similar to findall(). Better to tweak findAll() instead.
+
+  // static async filter(data) {
+  //   const { whereCols, values } = this._sqlForFilter(data);
     
-    const companiesRes = await db.query(
-      `SELECT handle,
-              name,
-              description,
-              num_employees AS "numEmployees",
-              logo_url AS "logoUrl"
-        FROM companies
-        WHERE ${whereCols}
-        ORDER BY name`,
-        [...values]);
-    const companies = companiesRes.rows;
+  //   const companiesRes = await db.query(
+  //     `SELECT handle,
+  //             name,
+  //             description,
+  //             num_employees AS "numEmployees",
+  //             logo_url AS "logoUrl"
+  //       FROM companies
+  //       WHERE ${whereCols}
+  //       ORDER BY name`,
+  //       [...values]);
 
-    if (companies.length < 1) throw new NotFoundError(`Company not found`);
+  //   const companies = companiesRes.rows;
 
-    return companies;
-  }
+  //   if (companies.length < 1) throw new NotFoundError(`Company not found`);
+
+  //   return companies;
+  // }
 
   /** Given a company handle, return data about company.
    *
@@ -171,18 +196,22 @@ class Company {
   }
 
   /** Helper function to filter companies
-   * given an object like { name, maxEmployees, minEmployees}
    * 
-   * if object had other keys beside name, maxEmployees, minEmployees, throws an error
+   * Given an object like { name, maxEmployees, minEmployees}
    * 
-   * returns {
+   * If object has other keys besides name, maxEmployees, minEmployees, throws an error
+   * 
+   * Returns object: {
    *  whereCols: is a string separated by AND
-   *  values: is the values of the given object
+   *  values: is an array representing the values of the given object
    * }
    */
-  static sqlForFilter(dataToFilter) {
-    // console.log("########", dataToFilter);
-    const jsToSqlWhere = { name: `name ILIKE` , minEmployees:  `num_employees >=`, maxEmployees:  `num_employees <=` }
+
+  // Need to tweak a small part of this query so 'findAll()' can be dynamic...
+  // Tweak WHERE columns...
+
+  static _sqlForFilter(dataToFilter) {
+    const jsToSqlWhere = { name: `name ILIKE` , minEmployees: `num_employees >=`, maxEmployees: `num_employees <=` }
     const keys = Object.keys(dataToFilter);
 
     for (let key of keys) {
@@ -194,9 +223,7 @@ class Company {
     // {name: 'net' , minEmployees:  10 } => ['name ILIKE $1', 'num_employees >= $2']
     const cols = keys.map((colName, idx) => `${jsToSqlWhere[colName]} $${idx + 1}`);
   
-    // console.log("########", dataToFilter.minEmployees, dataToFilter.maxEmployees);
     if (Number(dataToFilter.minEmployees) > Number(dataToFilter.maxEmployees)) {
-      // console.log("INSIDE FOR ERROR");
       let message = 'Min employees cannot be greater than the max employees.'
       throw new BadRequestError(message);
     } 
@@ -205,12 +232,18 @@ class Company {
       dataToFilter.name = `%${dataToFilter.name}%`;
     }
   
+    let where = cols.length > 0 ? `WHERE ${cols.join(" AND ")}` : ``;
+
     return {
-      whereCols: cols.join(" AND "),
+      whereCols: where,
       values: Object.values(dataToFilter),
     };
+
+    // return {
+    //   whereCols: cols.join(" AND "),
+    //   values: Object.values(dataToFilter),
+    // };
   }
 }
-
 
 module.exports = Company;

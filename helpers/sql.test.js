@@ -3,9 +3,11 @@ const {
   BadRequestError,
   UnauthorizedError,
 } = require("../expressError");
+const { findAll } = require("../models/company");
 const { sqlForPartialUpdate } = require("./sql");
 
-//TODO: why console.error from app.js
+//TODO: why console.error from app.js --> we got the console.error because it's logging that the error
+// happened, but we caught it.
 
 describe("sqlForPartialUpdate", function () {
   test("works: keys available", function () {
@@ -22,9 +24,12 @@ describe("sqlForPartialUpdate", function () {
     const dataToUpdate = {};
     const jsToSql = { name: "name", description: "description", numEmployees: "num_employees" };
 
-    let result;
+    // fail(): I expect line 30 to throw an error... but if for some reason it doesn't throw an errow,
+    // test won't pass... silent false-positive. So use fail() function to prevent false-positive. If
+    // line 30 doesn't throw an errow, I want you to fail and throw an error.
     try {
-      result = sqlForPartialUpdate(dataToUpdate, jsToSql);
+      sqlForPartialUpdate(dataToUpdate, jsToSql);
+      fail();
     } catch (err) {
       expect(err.message).toEqual("No data");
       expect(err.status).toEqual(400);
