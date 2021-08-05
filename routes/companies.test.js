@@ -210,12 +210,12 @@ describe("PATCH /companies/:handle", function () {
 
   test("unauth for anon", async function () {
     const resp = await request(app)
-        .patch(`/companies/c1`)
-        .send({
-          name: "C1-new",
-        });
+      .patch(`/companies/c1`)
+      .send({
+        name: "C1-new",
+      });
     expect(resp.statusCode).toEqual(401);
-  });
+  })
 
   test("not found on no such company", async function () {
     const resp = await request(app)
