@@ -210,9 +210,6 @@ class Company {
    * }
    */
 
-  // Need to tweak a small part of this query so 'findAll()' can be dynamic...
-  // Tweak WHERE columns...
-
   static _sqlForFilter(dataToFilter) {
     const jsToSqlWhere = { name: `name ILIKE` , minEmployees: `num_employees >=`, maxEmployees: `num_employees <=` }
     const keys = Object.keys(dataToFilter);
