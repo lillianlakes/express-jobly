@@ -52,6 +52,7 @@ describe("create", function () {
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.message).toEqual("Duplicate company: new");
     }
   });
 });

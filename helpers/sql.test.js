@@ -23,7 +23,7 @@ describe("sqlForPartialUpdate", function () {
       sqlForPartialUpdate(dataToUpdate, jsToSql);
       fail();
     } catch (err) {
-      expect(err.message).toEqual("No data");
+      expect(err.message).toEqual("Bad Request");
       expect(err.status).toEqual(400);
     }
   });

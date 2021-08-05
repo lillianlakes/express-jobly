@@ -101,11 +101,12 @@ describe("ensureCorrectUserOrAdmin", function () {
   });
 
   test("unauth, logged in as wrong user", function () {
-    expect.assertions(1);
+    expect.assertions(2);
     const req = { params: { username: "test" } };
     const res = { locals: { user: { username: "testAdmin"} } };
     const next = function (err) {
       expect(err).toBeTruthy();
+      expect(err.message).toEqual("Bad Request");
     };
     ensureCorrectUserOrAdmin(req, res, next);
   });
