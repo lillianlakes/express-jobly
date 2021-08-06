@@ -1,8 +1,5 @@
 "use strict";
 
-// TODO: 1. Test updated 'Show jobs for a company' for both the model and the router
-// 2. code review ... step 5! WINE@!@@@@
-
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
@@ -144,58 +141,31 @@ class Company {
                 j.salary,
                 j.equity
            FROM companies AS c
-              JOIN jobs AS j ON c.handle = j.company_handle
+              LEFT JOIN jobs AS j ON c.handle = j.company_handle
            WHERE c.handle = $1`,
         [handle]);
-
     const company = companyRes.rows.map(c => ({
       handle: c.handle, 
       name: c.name, 
       description: c.description, 
       numEmployees: c.numEmployees, 
-      logoUrl: c.logoUrl, 
-      jobs: {
-        id: c.id, 
-        title: c.title, 
-        salary: c.salary, 
-        equity: c.equity
-      }
+      logoUrl: c.logoUrl
     }))[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
 
+    if(companyRes.rows[0].id) {
+      const jobs = companyRes.rows.map(c => ({
+        id: c.id, 
+        title: c.title, 
+        salary: c.salary, 
+        equity: c.equity
+      }));
+      company.jobs = jobs;
+    }
+
     return company;
   }
-
-  // static async messagesFrom(username) {
-  //   const result = await db.query(
-  //         `SELECT m.id,
-  //                 m.to_username,
-  //                 u.first_name,
-  //                 u.last_name,
-  //                 u.phone,
-  //                 m.body,
-  //                 m.sent_at,
-  //                 m.read_at
-  //            FROM messages AS m
-  //                   JOIN users AS u ON m.to_username = u.username
-  //            WHERE from_username = $1`,
-  //       [username]);
-
-  //   return result.rows.map(m => ({
-  //     id: m.id,
-  //     to_user: {
-  //       username: m.to_username,
-  //       first_name: m.first_name,
-  //       last_name: m.last_name,
-  //       phone: m.phone,
-  //     },
-  //     body: m.body,
-  //     sent_at: m.sent_at,
-  //     read_at: m.read_at,
-  //   }));
-  // }
-
 
   /** Update company data with `data`.
    *

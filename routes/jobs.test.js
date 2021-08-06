@@ -5,8 +5,6 @@ const request = require("supertest");
 const db = require("../db");
 const app = require("../app");
 
-// TODO: 1. add jobs to _testCommon
-
 const {
   commonBeforeAll,
   commonBeforeEach,
@@ -20,8 +18,6 @@ beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
-
-// TODO: 2. update 'company/companies' to 'job/jobs', etc.
 
 /************************************** POST /companies */
 
@@ -103,7 +99,7 @@ describe("GET /jobs", function () {
               title: "t2",
               salary: 60000,
               equity: "0.25",
-              company_handle: "c2"
+              company_handle: "c3"
             },
             {
               id: expect.any(Number),
@@ -142,7 +138,7 @@ describe("GET /jobs", function () {
               title: "t2",
               salary: 60000,
               equity: "0.25",
-              company_handle: "c2"
+              company_handle: "c3"
             },
             {
               id: expect.any(Number),
@@ -172,7 +168,7 @@ describe("GET /jobs", function () {
               title: "t2",
               salary: 60000,
               equity: "0.25",
-              company_handle: "c2"
+              company_handle: "c3"
             }
           ],
     });
@@ -195,7 +191,7 @@ describe("GET /jobs", function () {
               title: "t2",
               salary: 60000,
               equity: "0.25",
-              company_handle: "c2"
+              company_handle: "c3"
             },
             {
               id: expect.any(Number),
