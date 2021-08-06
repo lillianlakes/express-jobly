@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1628270863098" clover="3.2.0">
-  <project timestamp="1628270863098" name="All files">
-    <metrics statements="400" coveredstatements="400" conditionals="126" coveredconditionals="126" methods="71" coveredmethods="71" elements="597" coveredelements="597" complexity="0" loc="400" ncloc="400" packages="5" files="16" classes="16"/>
+<coverage generated="1628276690012" clover="3.2.0">
+  <project timestamp="1628276690012" name="All files">
+    <metrics statements="401" coveredstatements="401" conditionals="126" coveredconditionals="126" methods="71" coveredmethods="71" elements="598" coveredelements="598" complexity="0" loc="401" ncloc="401" packages="5" files="16" classes="16"/>
     <package name="express-jobly">
       <metrics statements="52" coveredstatements="52" conditionals="18" coveredconditionals="18" methods="8" coveredmethods="8"/>
       <file name="app.js" path="/Users/serena/Documents/rithm/week7/day33/express-jobly/app.js">
@@ -120,71 +120,72 @@
       </file>
     </package>
     <package name="express-jobly.models">
-      <metrics statements="143" coveredstatements="143" conditionals="58" coveredconditionals="58" methods="26" coveredmethods="26"/>
+      <metrics statements="144" coveredstatements="144" conditionals="58" coveredconditionals="58" methods="26" coveredmethods="26"/>
       <file name="_testCommon.js" path="/Users/serena/Documents/rithm/week7/day33/express-jobly/models/_testCommon.js">
-        <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
+        <metrics statements="15" coveredstatements="15" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
         <line num="2" count="3" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
         <line num="5" count="3" type="stmt"/>
         <line num="9" count="3" type="stmt"/>
-        <line num="11" count="3" type="stmt"/>
-        <line num="13" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
         <line num="14" count="3" type="stmt"/>
-        <line num="16" count="3" type="stmt"/>
-        <line num="22" count="3" type="stmt"/>
-        <line num="37" count="3" type="stmt"/>
-        <line num="45" count="59" type="stmt"/>
-        <line num="49" count="59" type="stmt"/>
-        <line num="53" count="3" type="stmt"/>
-        <line num="57" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="38" count="3" type="stmt"/>
+        <line num="51" count="59" type="stmt"/>
+        <line num="55" count="59" type="stmt"/>
+        <line num="59" count="3" type="stmt"/>
+        <line num="63" count="3" type="stmt"/>
       </file>
       <file name="company.js" path="/Users/serena/Documents/rithm/week7/day33/express-jobly/models/company.js">
         <metrics statements="45" coveredstatements="45" conditionals="21" coveredconditionals="21" methods="9" coveredmethods="9"/>
-        <line num="6" count="6" type="stmt"/>
-        <line num="7" count="6" type="stmt"/>
-        <line num="8" count="6" type="stmt"/>
-        <line num="23" count="16" type="stmt"/>
-        <line num="29" count="16" type="cond" truecount="2" falsecount="0"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="32" count="15" type="stmt"/>
-        <line num="50" count="15" type="stmt"/>
-        <line num="52" count="15" type="stmt"/>
-        <line num="64" count="11" type="stmt"/>
-        <line num="66" count="9" type="stmt"/>
-        <line num="76" count="8" type="stmt"/>
-        <line num="78" count="8" type="cond" truecount="2" falsecount="0"/>
-        <line num="80" count="7" type="stmt"/>
-        <line num="136" count="6" type="stmt"/>
-        <line num="150" count="6" type="stmt"/>
-        <line num="158" count="6" type="cond" truecount="2" falsecount="0"/>
-        <line num="160" count="4" type="cond" truecount="2" falsecount="0"/>
-        <line num="161" count="3" type="stmt"/>
-        <line num="167" count="2" type="stmt"/>
-        <line num="170" count="4" type="stmt"/>
-        <line num="186" count="6" type="stmt"/>
-        <line num="192" count="5" type="stmt"/>
-        <line num="194" count="5" type="stmt"/>
-        <line num="199" count="5" type="stmt"/>
-        <line num="200" count="5" type="stmt"/>
-        <line num="202" count="5" type="cond" truecount="2" falsecount="0"/>
-        <line num="204" count="3" type="stmt"/>
-        <line num="213" count="4" type="stmt"/>
-        <line num="219" count="4" type="stmt"/>
-        <line num="221" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="5" count="6" type="stmt"/>
+        <line num="20" count="16" type="stmt"/>
+        <line num="26" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="29" count="15" type="stmt"/>
+        <line num="47" count="15" type="stmt"/>
+        <line num="49" count="15" type="stmt"/>
+        <line num="61" count="11" type="stmt"/>
+        <line num="63" count="9" type="stmt"/>
+        <line num="73" count="8" type="stmt"/>
+        <line num="75" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="77" count="7" type="stmt"/>
+        <line num="133" count="6" type="stmt"/>
+        <line num="147" count="6" type="stmt"/>
+        <line num="155" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="157" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="158" count="3" type="stmt"/>
+        <line num="164" count="2" type="stmt"/>
+        <line num="167" count="4" type="stmt"/>
+        <line num="183" count="6" type="stmt"/>
+        <line num="189" count="5" type="stmt"/>
+        <line num="191" count="5" type="stmt"/>
+        <line num="196" count="5" type="stmt"/>
+        <line num="197" count="5" type="stmt"/>
+        <line num="199" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="201" count="3" type="stmt"/>
+        <line num="210" count="4" type="stmt"/>
+        <line num="216" count="4" type="stmt"/>
+        <line num="218" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="234" count="15" type="stmt"/>
+        <line num="235" count="15" type="stmt"/>
         <line num="237" count="15" type="stmt"/>
-        <line num="238" count="15" type="stmt"/>
-        <line num="240" count="15" type="stmt"/>
-        <line num="241" count="17" type="cond" truecount="2" falsecount="0"/>
-        <line num="242" count="2" type="stmt"/>
-        <line num="247" count="15" type="stmt"/>
-        <line num="249" count="13" type="cond" truecount="2" falsecount="0"/>
-        <line num="250" count="2" type="stmt"/>
-        <line num="251" count="2" type="stmt"/>
-        <line num="254" count="11" type="cond" truecount="2" falsecount="0"/>
-        <line num="255" count="6" type="stmt"/>
-        <line num="258" count="11" type="cond" truecount="2" falsecount="0"/>
-        <line num="260" count="11" type="stmt"/>
-        <line num="272" count="6" type="stmt"/>
+        <line num="238" count="17" type="cond" truecount="2" falsecount="0"/>
+        <line num="239" count="2" type="stmt"/>
+        <line num="244" count="15" type="stmt"/>
+        <line num="246" count="13" type="cond" truecount="2" falsecount="0"/>
+        <line num="247" count="2" type="stmt"/>
+        <line num="248" count="2" type="stmt"/>
+        <line num="251" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="252" count="6" type="stmt"/>
+        <line num="255" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="257" count="11" type="stmt"/>
+        <line num="269" count="6" type="stmt"/>
       </file>
       <file name="job.js" path="/Users/serena/Documents/rithm/week7/day33/express-jobly/models/job.js">
         <metrics statements="44" coveredstatements="44" conditionals="23" coveredconditionals="23" methods="7" coveredmethods="7"/>
@@ -261,20 +262,20 @@
         <line num="138" count="6" type="stmt"/>
         <line num="140" count="6" type="cond" truecount="2" falsecount="0"/>
         <line num="142" count="4" type="stmt"/>
-        <line num="163" count="9" type="cond" truecount="2" falsecount="0"/>
-        <line num="164" count="2" type="stmt"/>
-        <line num="167" count="9" type="stmt"/>
-        <line num="174" count="8" type="stmt"/>
-        <line num="176" count="8" type="stmt"/>
-        <line num="184" count="8" type="stmt"/>
-        <line num="185" count="8" type="stmt"/>
-        <line num="187" count="8" type="cond" truecount="2" falsecount="0"/>
-        <line num="189" count="6" type="stmt"/>
-        <line num="190" count="6" type="stmt"/>
-        <line num="196" count="6" type="stmt"/>
-        <line num="203" count="6" type="stmt"/>
-        <line num="205" count="6" type="cond" truecount="2" falsecount="0"/>
-        <line num="210" count="6" type="stmt"/>
+        <line num="207" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="208" count="2" type="stmt"/>
+        <line num="211" count="9" type="stmt"/>
+        <line num="218" count="8" type="stmt"/>
+        <line num="220" count="8" type="stmt"/>
+        <line num="228" count="8" type="stmt"/>
+        <line num="229" count="8" type="stmt"/>
+        <line num="231" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="233" count="6" type="stmt"/>
+        <line num="234" count="6" type="stmt"/>
+        <line num="240" count="6" type="stmt"/>
+        <line num="247" count="6" type="stmt"/>
+        <line num="249" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="269" count="6" type="stmt"/>
       </file>
     </package>
     <package name="express-jobly.routes">
@@ -422,10 +423,10 @@
         <line num="103" count="2" type="stmt"/>
         <line num="106" count="2" type="stmt"/>
         <line num="107" count="1" type="stmt"/>
-        <line num="115" count="5" type="stmt"/>
-        <line num="116" count="2" type="stmt"/>
-        <line num="117" count="1" type="stmt"/>
-        <line num="121" count="5" type="stmt"/>
+        <line num="117" count="5" type="stmt"/>
+        <line num="118" count="2" type="stmt"/>
+        <line num="119" count="1" type="stmt"/>
+        <line num="123" count="5" type="stmt"/>
       </file>
       <file name="users.js" path="/Users/serena/Documents/rithm/week7/day33/express-jobly/routes/users.js">
         <metrics statements="34" coveredstatements="34" conditionals="4" coveredconditionals="4" methods="7" coveredmethods="7"/>
@@ -462,7 +463,7 @@
         <line num="96" count="5" type="stmt"/>
         <line num="97" count="4" type="stmt"/>
         <line num="98" count="3" type="stmt"/>
-        <line num="102" count="5" type="stmt"/>
+        <line num="113" count="5" type="stmt"/>
       </file>
     </package>
   </project>
