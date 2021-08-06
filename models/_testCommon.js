@@ -41,8 +41,6 @@ async function commonBeforeAll() {
            ('j3', 20, NULL, 'c2')`);
 }
 
-let id 
-
 async function commonBeforeEach() {
   await db.query("BEGIN");
 }

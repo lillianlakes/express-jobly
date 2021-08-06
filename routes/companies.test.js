@@ -30,7 +30,7 @@ describe("POST /companies", function () {
     numEmployees: 10,
   };
 
-  test("ok for users", async function () {
+  test("ok for admin", async function () {
     const resp = await request(app)
         .post("/companies")
         .send(newCompany)
@@ -41,7 +41,7 @@ describe("POST /companies", function () {
     });
   });
   
-  test("unauth for not admin", async function () {
+  test("unauth for non-admin", async function () {
     const resp = await request(app)
         .post("/companies")
         .send(newCompany)
@@ -105,7 +105,7 @@ describe("GET /companies", function () {
     });
   });
 
-  test("filter ok for anon", async function () {
+  test("filter company name ok for anon", async function () {
     const resp = await request(app).get("/companies?name=c1");
     expect(resp.body).toEqual({
       companies:
@@ -217,7 +217,7 @@ describe("PATCH /companies/:handle", function () {
     });
   });
   
-  test("unauth for non admin user", async function () {
+  test("forbidden for non admin user", async function () {
     const resp = await request(app)
         .patch(`/companies/c1`)
         .send({
@@ -277,7 +277,7 @@ describe("DELETE /companies/:handle", function () {
     expect(resp.body).toEqual({ deleted: "c1" });
   });
   
-  test("unauth for non admin users", async function () {
+  test("forbidden for non admin users", async function () {
     const resp = await request(app)
         .delete(`/companies/c1`)
         .set("authorization", `Bearer ${u2Token}`);
