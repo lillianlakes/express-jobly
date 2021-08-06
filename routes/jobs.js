@@ -112,6 +112,8 @@ router.patch("/:id", ensureLoggedInAsAdmin, async function (req, res, next) {
  * Authorization: login as admin
  */
 
+// TODO: add '+' sign to req.params.id... in the return so that it's converted to a number... so if we send a 
+// request through axios, the format is the same as the request.
 router.delete("/:id", ensureLoggedInAsAdmin, async function (req, res, next) {
   await Job.remove(req.params.id);
   return res.json({ deleted: req.params.id });

@@ -316,6 +316,8 @@ describe("PATCH /jobs/:id", function () {
 
 /************************************** DELETE /jobs/:id */
 
+// TODO: rename U1Token to adminToken
+
 describe("DELETE /jobs/:id", function () {
   test("works for admin", async function () {
     const resp = await request(app)

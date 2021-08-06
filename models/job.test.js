@@ -68,6 +68,10 @@ describe("create", function () {
 
 /************************************** findAll */
 
+// when we have jobs, we can test with specific test IDs... instead of 'expect.any(Number)', as we create jobs, we retain them 
+// through test IDs. That way, we know the job ID to expect. Can see solution to see how to implement this. Since we create jobs 
+// already, we can hang on to those IDs and expect them here.
+
 describe("findAll", function () {
   test("works: no filter", async function () {
     let jobs = await Job.findAll();
