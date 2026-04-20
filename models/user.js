@@ -30,7 +30,7 @@ class User {
                   last_name AS "lastName",
                   email,
                   is_admin AS "isAdmin"
-           FROM users
+           FROM public.users
            WHERE username = $1`,
       [username],
     );
@@ -60,7 +60,7 @@ class User {
     { username, password, firstName, lastName, email, isAdmin }) {
     const duplicateCheck = await db.query(
       `SELECT username
-           FROM users
+           FROM public.users
            WHERE username = $1`,
       [username],
     );
@@ -72,7 +72,7 @@ class User {
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
-      `INSERT INTO users
+      `INSERT INTO public.users
            (username,
             password,
             first_name,
@@ -108,7 +108,7 @@ class User {
                   last_name AS "lastName",
                   email,
                   is_admin AS "isAdmin"
-           FROM users
+           FROM public.users
            ORDER BY username`,
     );
 
@@ -124,12 +124,12 @@ class User {
 
   static async get(username) {
     const userRes = await db.query(
-      `SELECT username,
+       `SELECT username,
                   email,
                   first_name AS "firstName",
                   last_name AS "lastName",
                   is_admin AS "isAdmin"
-           FROM users
+         FROM public.users
            WHERE username = $1`,
       [username],
     );
@@ -140,7 +140,7 @@ class User {
 
     const appRes = await db.query(
       `SELECT job_id
-       FROM applications
+      FROM public.applications
        WHERE username = $1`,
       [username],
     );
@@ -225,7 +225,7 @@ class User {
       });
     const usernameVarIdx = "$" + (values.length + 1);
 
-    const querySql = `UPDATE users 
+    const querySql = `UPDATE public.users 
                       SET ${setCols} 
                       WHERE username = ${usernameVarIdx} 
                       RETURNING username,
@@ -240,7 +240,7 @@ class User {
 
     const appRes = await db.query(
       `SELECT job_id
-       FROM applications
+      FROM public.applications
        WHERE username = $1`,
       [username],
     );
@@ -255,8 +255,8 @@ class User {
 
   static async remove(username) {
     let result = await db.query(
-      `DELETE
-           FROM users
+       `DELETE
+         FROM public.users
            WHERE username = $1
            RETURNING username`,
       [username],
@@ -271,7 +271,7 @@ class User {
   static async apply(username, id) {
     const userCheck = await db.query(
       `SELECT username
-         FROM users
+         FROM public.users
          WHERE username = $1`,
       [username],
     );
@@ -280,7 +280,7 @@ class User {
 
     const jobCheck = await db.query(
       `SELECT id
-         FROM jobs
+         FROM public.jobs
          WHERE id = $1`,
       [id],
     );
@@ -289,7 +289,7 @@ class User {
 
     try {
       const result = await db.query(
-        `INSERT INTO applications (username, job_id)
+        `INSERT INTO public.applications (username, job_id)
            VALUES ($1, $2)
            RETURNING username, job_id AS "jobId"`,
         [username, id],

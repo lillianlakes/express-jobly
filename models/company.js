@@ -19,7 +19,7 @@ class Company {
   static async create({ handle, name, description, numEmployees, logoUrl }) {
     const duplicateCheck = await db.query(
         `SELECT handle
-           FROM companies
+           FROM public.companies
            WHERE handle = $1`,
         [handle]);
 
@@ -27,7 +27,7 @@ class Company {
       throw new BadRequestError(`Duplicate company: ${handle}`);
 
     const result = await db.query(
-        `INSERT INTO companies(
+        `INSERT INTO public.companies(
           handle,
           name,
           description,
@@ -66,7 +66,7 @@ class Company {
       description,
       num_employees AS "numEmployees",
       logo_url AS "logoUrl"
-      FROM companies
+      FROM public.companies
       ${whereCols}
       ORDER BY name`,
       [...values]);
@@ -84,7 +84,7 @@ class Company {
       //               description,
       //               num_employees AS "numEmployees",
       //               logo_url AS "logoUrl"
-      //          FROM companies
+      //          FROM public.companies
       //          ORDER BY name`);
       //   return companiesRes.rows;
       // }
@@ -109,7 +109,7 @@ class Company {
   //             description,
   //             num_employees AS "numEmployees",
   //             logo_url AS "logoUrl"
-  //       FROM companies
+  //       FROM public.companies
   //       WHERE ${whereCols}
   //       ORDER BY name`,
   //       [...values]);
@@ -140,8 +140,8 @@ class Company {
                 j.title,
                 j.salary,
                 j.equity
-           FROM companies AS c
-              LEFT JOIN jobs AS j ON c.handle = j.company_handle
+            FROM public.companies AS c
+              LEFT JOIN public.jobs AS j ON c.handle = j.company_handle
            WHERE c.handle = $1`,
         [handle]);
     const company = companyRes.rows.map(c => ({
@@ -189,7 +189,7 @@ class Company {
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `
-      UPDATE companies
+      UPDATE public.companies
       SET ${setCols}
         WHERE handle = ${handleVarIdx}
         RETURNING handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl"`;
@@ -209,7 +209,7 @@ class Company {
   static async remove(handle) {
     const result = await db.query(
         `DELETE
-           FROM companies
+           FROM public.companies
            WHERE handle = $1
            RETURNING handle`,
         [handle]);

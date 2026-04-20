@@ -18,7 +18,7 @@ class Job {
     let result;
     try {
       result = await db.query(
-        `INSERT INTO jobs(title, salary, equity, company_handle)
+        `INSERT INTO public.jobs(title, salary, equity, company_handle)
           VALUES ($1, $2, $3, $4)
           RETURNING id, title, salary, equity, company_handle`,
           [title, salary, equity, company_handle],
@@ -49,7 +49,7 @@ class Job {
       salary,
       equity,
       company_handle
-      FROM jobs
+      FROM public.jobs
       ${whereCols}
       ORDER BY title`,
       [...values]);
@@ -74,7 +74,7 @@ class Job {
         salary,
         equity,
         company_handle
-        FROM jobs
+        FROM public.jobs
            WHERE id = $1`,
         [id]);
 
@@ -102,7 +102,7 @@ class Job {
     const idVarIdx = "$" + (values.length + 1);
 
     const querySql = `
-      UPDATE jobs
+      UPDATE public.jobs
       SET ${setCols}
         WHERE id = ${idVarIdx}
         RETURNING id, title, salary, equity, company_handle`;
@@ -122,7 +122,7 @@ class Job {
   static async remove(id) {
     const result = await db.query(
         `DELETE
-           FROM jobs
+           FROM public.jobs
            WHERE id = $1
            RETURNING id`,
         [id]);
