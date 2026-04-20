@@ -45,6 +45,12 @@ describe("GET /ai/recommendations/:username", function () {
     const recommendedJobIds = resp.body.recommendations.map(job => job.id);
     expect(recommendedJobIds).not.toContain(1);
 
+    for (let recommendation of resp.body.recommendations) {
+      expect(Number.isInteger(recommendation.score)).toBeTruthy();
+      expect(recommendation.score).toBeGreaterThanOrEqual(0);
+      expect(recommendation.score).toBeLessThanOrEqual(100);
+    }
+
     if (resp.body.recommendations.length > 0) {
       expect(resp.body.recommendations[0]).toEqual(
         expect.objectContaining({

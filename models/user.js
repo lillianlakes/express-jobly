@@ -29,35 +29,36 @@ class User {
 
   static _recommendationScore(candidateJob, context) {
     const reasons = [];
-    let score = 0;
+    let rawScore = 0;
 
     const jobTokens = new Set(this._tokenizeRecommendationText(
       `${candidateJob.title} ${candidateJob.company_handle}`,
     ));
 
     const overlapTokens = [...jobTokens].filter(token => context.profileTokens.has(token));
+    const overlapRatio = jobTokens.size > 0 ? overlapTokens.length / jobTokens.size : 0;
     if (overlapTokens.length > 0) {
-      score += overlapTokens.length * 20;
+      rawScore += Math.min(60, overlapRatio * 60);
       reasons.push(`Matches your interests: ${overlapTokens.slice(0, 3).join(", ")}`);
     }
 
     if (context.appliedCompanies.has(candidateJob.company_handle)) {
-      score += 15;
+      rawScore += 20;
       reasons.push("Company aligns with your past applications");
     }
 
     if (context.avgAppliedSalary !== null && candidateJob.salary !== null) {
       if (candidateJob.salary >= context.avgAppliedSalary * 0.9) {
-        score += 10;
+        rawScore += 12;
         reasons.push("Salary aligns with your application history");
       }
     } else if (candidateJob.salary !== null) {
-      score += Math.min(8, Math.floor(candidateJob.salary / 10000));
+      rawScore += 12;
       reasons.push("Competitive salary");
     }
 
     if (context.prefersEquity && Number(candidateJob.equity) > 0) {
-      score += 8;
+      rawScore += 8;
       reasons.push("Includes equity");
     }
 
@@ -65,7 +66,9 @@ class User {
       reasons.push("Strong general fit based on available profile data");
     }
 
-    return { score, reasons };
+    const normalizedScore = Math.min(100, Math.max(0, Math.round(rawScore)));
+
+    return { score: normalizedScore, reasons };
   }
 
   /** authenticate user with username, password.

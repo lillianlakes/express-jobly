@@ -12,6 +12,7 @@ const router = new express.Router();
 /** GET /recommendations/:username?limit=10 => { recommendations, meta }
  *
  * Returns ranked job recommendations without external AI APIs.
+ * Each recommendation includes `score` as an integer normalized to 0-100.
  *
  * Authorization required: login as admin or correct user
  */
