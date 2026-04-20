@@ -14,19 +14,19 @@ class Job {
    * Returns { id, title, salary, equity, company_handle }
    *
    * */
-  static async create( { title, salary, equity, company_handle }) {
+  static async create({ title, salary, equity, company_handle }) {
     let result;
     try {
       result = await db.query(
         `INSERT INTO public.jobs(title, salary, equity, company_handle)
           VALUES ($1, $2, $3, $4)
           RETURNING id, title, salary, equity, company_handle`,
-          [title, salary, equity, company_handle],
+        [title, salary, equity, company_handle],
       );
     } catch (err) {
       throw new BadRequestError("The job could not be created.");
     }
-  
+
     const job = result.rows[0];
 
     return job;
@@ -42,7 +42,7 @@ class Job {
 
   static async findAll(data = {}) {
     const { whereCols, values } = this._sqlForFilter(data);
-    
+
     const jobsRes = await db.query(
       `SELECT id, 
       title,
@@ -58,7 +58,7 @@ class Job {
     if (jobs.length < 1) throw new NotFoundError(`Job not found`);
 
     return jobsRes.rows;
-  }  
+  }
 
   /** Given a job id, return data about the job.
    *
@@ -67,16 +67,16 @@ class Job {
    * Throws NotFoundError if not found.
    **/
 
-   static async get(id) {
+  static async get(id) {
     const jobRes = await db.query(
-        `SELECT id, 
+      `SELECT id, 
         title,
         salary,
         equity,
         company_handle
         FROM public.jobs
            WHERE id = $1`,
-        [id]);
+      [id]);
 
     const job = jobRes.rows[0];
 
@@ -121,11 +121,11 @@ class Job {
 
   static async remove(id) {
     const result = await db.query(
-        `DELETE
+      `DELETE
            FROM public.jobs
            WHERE id = $1
            RETURNING id`,
-        [id]);
+      [id]);
     const job = result.rows[0];
 
     if (!job) throw new NotFoundError(`No job: ${id}`);
@@ -145,7 +145,7 @@ class Job {
 
   static _sqlForFilter(dataToFilter) {
 
-    const jsToSqlWhere = { title: `title ILIKE` , minSalary: `salary >=`};
+    const jsToSqlWhere = { title: `title ILIKE`, minSalary: `salary >=` };
 
     if (dataToFilter.hasEquity !== undefined) {
       //TODO why instanceof not working???
@@ -157,7 +157,7 @@ class Job {
       if (dataToFilter.hasEquity === true) jsToSqlWhere.hasEquity = `equity > 0`;
       delete dataToFilter.hasEquity;
     }
-  
+
     const keys = Object.keys(dataToFilter); // 2 elements
 
     for (let key of keys) {
@@ -165,7 +165,7 @@ class Job {
         throw new BadRequestError("Incorrect filtering field");
       }
     }
-    
+
     /**  {title: 'scientist' , minSalary:  50000, hasEquity: true } => 
     ['title ILIKE $1', 'salary >= $2', 'equity > 0] */
     const cols = keys.map((colName, idx) => `${jsToSqlWhere[colName]} $${idx + 1}`); // 2 elements
@@ -175,7 +175,7 @@ class Job {
     }
 
     if (jsToSqlWhere.hasEquity) cols.push(jsToSqlWhere.hasEquity); // push 3rd
-  
+
     let where = cols.length > 0 ? `WHERE ${cols.join(" AND ")}` : ``; // joining 3 filter criteria
 
     return {

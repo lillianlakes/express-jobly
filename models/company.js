@@ -18,16 +18,16 @@ class Company {
 
   static async create({ handle, name, description, numEmployees, logoUrl }) {
     const duplicateCheck = await db.query(
-        `SELECT handle
+      `SELECT handle
            FROM public.companies
            WHERE handle = $1`,
-        [handle]);
+      [handle]);
 
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate company: ${handle}`);
 
     const result = await db.query(
-        `INSERT INTO public.companies(
+      `INSERT INTO public.companies(
           handle,
           name,
           description,
@@ -36,13 +36,13 @@ class Company {
            VALUES
              ($1, $2, $3, $4, $5)
            RETURNING handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl"`,
-        [
-          handle,
-          name,
-          description,
-          numEmployees,
-          logoUrl,
-        ],
+      [
+        handle,
+        name,
+        description,
+        numEmployees,
+        logoUrl,
+      ],
     );
     const company = result.rows[0];
 
@@ -59,7 +59,7 @@ class Company {
 
   static async findAll(data = {}) {
     const { whereCols, values } = this._sqlForFilter(data);
-    
+
     const companiesRes = await db.query(
       `SELECT handle,
       name,
@@ -75,19 +75,19 @@ class Company {
     if (companies.length < 1) throw new NotFoundError(`Company not found`);
 
     return companiesRes.rows;
-  }    
-    //OLD VERSION OF findALL()
-      // static async findAll() {
-      //   const companiesRes = await db.query(
-      //       `SELECT handle,
-      //               name,
-      //               description,
-      //               num_employees AS "numEmployees",
-      //               logo_url AS "logoUrl"
-      //          FROM public.companies
-      //          ORDER BY name`);
-      //   return companiesRes.rows;
-      // }
+  }
+  //OLD VERSION OF findALL()
+  // static async findAll() {
+  //   const companiesRes = await db.query(
+  //       `SELECT handle,
+  //               name,
+  //               description,
+  //               num_employees AS "numEmployees",
+  //               logo_url AS "logoUrl"
+  //          FROM public.companies
+  //          ORDER BY name`);
+  //   return companiesRes.rows;
+  // }
 
   /** Filter all companies.
    * 
@@ -102,7 +102,7 @@ class Company {
 
   // static async filter(data) {
   //   const { whereCols, values } = this._sqlForFilter(data);
-    
+
   //   const companiesRes = await db.query(
   //     `SELECT handle,
   //             name,
@@ -131,7 +131,7 @@ class Company {
 
   static async get(handle) {
     const companyRes = await db.query(
-        `SELECT c.handle,
+      `SELECT c.handle,
                 c.name,
                 c.description,
                 c.num_employees AS "numEmployees",
@@ -143,22 +143,22 @@ class Company {
             FROM public.companies AS c
               LEFT JOIN public.jobs AS j ON c.handle = j.company_handle
            WHERE c.handle = $1`,
-        [handle]);
+      [handle]);
     const company = companyRes.rows.map(c => ({
-      handle: c.handle, 
-      name: c.name, 
-      description: c.description, 
-      numEmployees: c.numEmployees, 
+      handle: c.handle,
+      name: c.name,
+      description: c.description,
+      numEmployees: c.numEmployees,
       logoUrl: c.logoUrl
     }))[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
 
-    if(companyRes.rows[0].id) {
+    if (companyRes.rows[0].id) {
       const jobs = companyRes.rows.map(c => ({
-        id: c.id, 
-        title: c.title, 
-        salary: c.salary, 
+        id: c.id,
+        title: c.title,
+        salary: c.salary,
         equity: c.equity
       }));
       company.jobs = jobs;
@@ -181,11 +181,11 @@ class Company {
 
   static async update(handle, data) {
     const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          numEmployees: "num_employees",
-          logoUrl: "logo_url",
-        });
+      data,
+      {
+        numEmployees: "num_employees",
+        logoUrl: "logo_url",
+      });
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `
@@ -208,11 +208,11 @@ class Company {
 
   static async remove(handle) {
     const result = await db.query(
-        `DELETE
+      `DELETE
            FROM public.companies
            WHERE handle = $1
            RETURNING handle`,
-        [handle]);
+      [handle]);
     const company = result.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
@@ -231,7 +231,7 @@ class Company {
    */
 
   static _sqlForFilter(dataToFilter) {
-    const jsToSqlWhere = { name: `name ILIKE` , minEmployees: `num_employees >=`, maxEmployees: `num_employees <=` }
+    const jsToSqlWhere = { name: `name ILIKE`, minEmployees: `num_employees >=`, maxEmployees: `num_employees <=` }
     const keys = Object.keys(dataToFilter);
 
     for (let key of keys) {
@@ -239,19 +239,19 @@ class Company {
         throw new BadRequestError("Incorrect filtering field");
       }
     }
-    
+
     // {name: 'net' , minEmployees:  10 } => ['name ILIKE $1', 'num_employees >= $2']
     const cols = keys.map((colName, idx) => `${jsToSqlWhere[colName]} $${idx + 1}`);
-  
+
     if (dataToFilter.minEmployees > dataToFilter.maxEmployees) {
       let message = 'Min employees cannot be greater than the max employees.'
       throw new BadRequestError(message);
-    } 
+    }
 
     if (dataToFilter.name) {
       dataToFilter.name = `%${dataToFilter.name}%`;
     }
-  
+
     let where = cols.length > 0 ? `WHERE ${cols.join(" AND ")}` : ``;
 
     return {

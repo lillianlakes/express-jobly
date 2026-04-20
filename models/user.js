@@ -124,7 +124,7 @@ class User {
 
   static async get(username) {
     const userRes = await db.query(
-       `SELECT username,
+      `SELECT username,
                   email,
                   first_name AS "firstName",
                   last_name AS "lastName",
@@ -255,7 +255,7 @@ class User {
 
   static async remove(username) {
     let result = await db.query(
-       `DELETE
+      `DELETE
          FROM public.users
            WHERE username = $1
            RETURNING username`,
