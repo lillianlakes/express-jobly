@@ -205,11 +205,11 @@ describe("GET /users/:username", function () {
       },
     });
   });
-  
+
   test("works for admin", async function () {
     const resp = await request(app)
-        .get(`/users/u1`)
-        .set("authorization", `Bearer ${u1Token}`);
+      .get(`/users/u1`)
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       user: {
         username: "u1",
@@ -221,11 +221,11 @@ describe("GET /users/:username", function () {
       },
     });
   });
-  
+
   test("works for admin to get other users", async function () {
     const resp = await request(app)
-        .get(`/users/u2`)
-        .set("authorization", `Bearer ${u1Token}`);
+      .get(`/users/u2`)
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       user: {
         username: "u2",
@@ -234,9 +234,9 @@ describe("GET /users/:username", function () {
         email: "user2@user.com",
         isAdmin: false,
         applications: [],
-    const resp = await request(app)
-      .get(`/users/u1`);
-    expect(resp.statusCode).toEqual(401);
+        const resp = await request(app)
+          .get(`/users/u1`);
+        expect(resp.statusCode).toEqual(401);
   });
 
   test("not found if user not found", async function () {
@@ -268,14 +268,14 @@ describe("PATCH /users/:username", () => {
       },
     });
   });
-  
+
   test("works for admin patch other user", async function () {
     const resp = await request(app)
-        .patch(`/users/u3`)
-        .send({
-          firstName: "New",
-        })
-        .set("authorization", `Bearer ${u1Token}`);
+      .patch(`/users/u3`)
+      .send({
+        firstName: "New",
+      })
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       user: {
         username: "u3",
@@ -287,14 +287,14 @@ describe("PATCH /users/:username", () => {
       },
     });
   });
-  
+
   test("works for that user", async function () {
     const resp = await request(app)
-        .patch(`/users/u2`)
-        .send({
-          firstName: "New",
-        })
-        .set("authorization", `Bearer ${u2Token}`);
+      .patch(`/users/u2`)
+      .send({
+        firstName: "New",
+      })
+      .set("authorization", `Bearer ${u2Token}`);
     expect(resp.body).toEqual({
       user: {
         username: "u2",
@@ -303,12 +303,12 @@ describe("PATCH /users/:username", () => {
         email: "user2@user.com",
         isAdmin: false,
         applications: [],
-    const resp = await request(app)
-      .patch(`/users/u1`)
-      .send({
-        firstName: "New",
-      });
-    expect(resp.statusCode).toEqual(401);
+        const resp = await request(app)
+          .patch(`/users/u1`)
+          .send({
+            firstName: "New",
+          });
+        expect(resp.statusCode).toEqual(401);
   });
 
   test("not found if no such user", async function () {

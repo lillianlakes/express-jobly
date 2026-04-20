@@ -10,6 +10,6 @@ const db = new Client({
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
-db.connect();
+db.connect().then(() => db.query("SET search_path TO public"));
 
 module.exports = db;
