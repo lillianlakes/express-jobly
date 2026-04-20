@@ -12,11 +12,7 @@ const db = new Client({
 
 db.connect()
   .then(() => {
-    console.log("Connected to database");
     return db.query("SET search_path TO public");
-  })
-  .then(() => {
-    console.log("Search path set to public");
   })
   .catch((err) => {
     console.error("Database connection error:", err);
