@@ -14,6 +14,60 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 /** Related functions for users. */
 
 class User {
+  static _tokenizeRecommendationText(text) {
+    const stopWords = new Set([
+      "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "in", "is", "it",
+      "of", "on", "or", "that", "the", "to", "with", "your", "you", "inc", "llc", "corp",
+    ]);
+
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter(token => token.length > 1 && !stopWords.has(token));
+  }
+
+  static _recommendationScore(candidateJob, context) {
+    const reasons = [];
+    let score = 0;
+
+    const jobTokens = new Set(this._tokenizeRecommendationText(
+      `${candidateJob.title} ${candidateJob.company_handle}`,
+    ));
+
+    const overlapTokens = [...jobTokens].filter(token => context.profileTokens.has(token));
+    if (overlapTokens.length > 0) {
+      score += overlapTokens.length * 20;
+      reasons.push(`Matches your interests: ${overlapTokens.slice(0, 3).join(", ")}`);
+    }
+
+    if (context.appliedCompanies.has(candidateJob.company_handle)) {
+      score += 15;
+      reasons.push("Company aligns with your past applications");
+    }
+
+    if (context.avgAppliedSalary !== null && candidateJob.salary !== null) {
+      if (candidateJob.salary >= context.avgAppliedSalary * 0.9) {
+        score += 10;
+        reasons.push("Salary aligns with your application history");
+      }
+    } else if (candidateJob.salary !== null) {
+      score += Math.min(8, Math.floor(candidateJob.salary / 10000));
+      reasons.push("Competitive salary");
+    }
+
+    if (context.prefersEquity && Number(candidateJob.equity) > 0) {
+      score += 8;
+      reasons.push("Includes equity");
+    }
+
+    if (reasons.length === 0) {
+      reasons.push("Strong general fit based on available profile data");
+    }
+
+    return { score, reasons };
+  }
+
   /** authenticate user with username, password.
    *
    * Returns { username, first_name, last_name, email, is_admin }
@@ -302,6 +356,95 @@ class User {
       }
       throw err;
     }
+  }
+
+  static async recommendJobs(username, { limit = 10 } = {}) {
+    const userRes = await db.query(
+      `SELECT username,
+              first_name AS "firstName",
+              last_name AS "lastName",
+              email
+       FROM public.users
+       WHERE username = $1`,
+      [username],
+    );
+
+    const user = userRes.rows[0];
+    if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    const appliedRes = await db.query(
+      `SELECT a.job_id,
+              j.title,
+              j.salary,
+              j.equity,
+              j.company_handle
+       FROM public.applications AS a
+       JOIN public.jobs AS j ON a.job_id = j.id
+       WHERE a.username = $1`,
+      [username],
+    );
+
+    const allJobsRes = await db.query(
+      `SELECT id,
+              title,
+              salary,
+              equity,
+              company_handle
+       FROM public.jobs`,
+    );
+
+    const appliedJobs = appliedRes.rows;
+    const appliedJobIds = new Set(appliedJobs.map(job => job.job_id));
+    const appliedCompanies = new Set(appliedJobs.map(job => job.company_handle));
+
+    const appliedSalaries = appliedJobs
+      .map(job => job.salary)
+      .filter(salary => salary !== null);
+    const avgAppliedSalary = appliedSalaries.length > 0
+      ? appliedSalaries.reduce((sum, salary) => sum + salary, 0) / appliedSalaries.length
+      : null;
+
+    const prefersEquity = appliedJobs.some(job => Number(job.equity) > 0);
+
+    const profileText = [
+      user.firstName,
+      user.lastName,
+      user.email,
+      ...appliedJobs.map(job => `${job.title} ${job.company_handle}`),
+    ].join(" ");
+
+    const profileTokens = new Set(this._tokenizeRecommendationText(profileText));
+
+    const recommendations = allJobsRes.rows
+      .filter(job => !appliedJobIds.has(job.id))
+      .map(job => {
+        const { score, reasons } = this._recommendationScore(job, {
+          profileTokens,
+          appliedCompanies,
+          avgAppliedSalary,
+          prefersEquity,
+        });
+
+        return {
+          id: job.id,
+          title: job.title,
+          companyHandle: job.company_handle,
+          salary: job.salary,
+          equity: job.equity,
+          score,
+          reasons,
+        };
+      })
+      .sort((a, b) => b.score - a.score || (b.salary || 0) - (a.salary || 0) || a.title.localeCompare(b.title))
+      .slice(0, limit);
+
+    return {
+      recommendations,
+      meta: {
+        totalCandidates: allJobsRes.rows.length - appliedJobIds.size,
+        returned: recommendations.length,
+      },
+    };
   }
 }
 
