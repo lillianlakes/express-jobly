@@ -17,7 +17,34 @@ const morgan = require("morgan");
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = new Set([
+  "https://www.jobly.lillianlakes.com",
+  "https://jobly.lillianlakes.com",
+  "https://jobly-lillian.netlify.app",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+]);
+
+if (process.env.CORS_ORIGIN) {
+  process.env.CORS_ORIGIN
+    .split(",")
+    .map(origin => origin.trim().replace(/\/$/, ""))
+    .filter(Boolean)
+    .forEach(origin => allowedOrigins.add(origin));
+}
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    const normalizedOrigin = origin.replace(/\/$/, "");
+    if (allowedOrigins.has(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  }
+}));
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
