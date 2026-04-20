@@ -117,8 +117,7 @@ class User {
 
   /** Given a username, return data about user.
    *
-   * Returns { username, first_name, last_name, is_admin, jobs }
-   *   where jobs is { id, title, company_handle, company_name, state }
+   * Returns { username, firstName, lastName, email, isAdmin, applications: [jobIds] }
    *
    * Throws NotFoundError if user not found.
    **/
@@ -138,6 +137,15 @@ class User {
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    const appRes = await db.query(
+      `SELECT job_id
+       FROM applications
+       WHERE username = $1`,
+      [username],
+    );
+
+    user.applications = appRes.rows.map(r => r.job_id);
 
     return user;
   }
@@ -194,7 +202,7 @@ class User {
    * Data can include:
    *   { firstName, lastName, password, email, isAdmin }
    *
-   * Returns { username, firstName, lastName, email, isAdmin }
+   * Returns { username, firstName, lastName, email, isAdmin, applications: [jobIds] }
    *
    * Throws NotFoundError if not found.
    *
@@ -229,6 +237,15 @@ class User {
     const user = result.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    const appRes = await db.query(
+      `SELECT job_id
+       FROM applications
+       WHERE username = $1`,
+      [username],
+    );
+
+    user.applications = appRes.rows.map(r => r.job_id);
 
     delete user.password;
     return user;

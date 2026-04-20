@@ -140,6 +140,7 @@ describe("get", function () {
       lastName: "U1L",
       email: "u1@email.com",
       isAdmin: true,
+      applications: [],
     });
   });
 
@@ -168,6 +169,7 @@ describe("update", function () {
     expect(job).toEqual({
       username: "u1",
       ...updateData,
+      applications: [],
     });
   });
 
@@ -181,6 +183,7 @@ describe("update", function () {
       lastName: "U1L",
       email: "u1@email.com",
       isAdmin: true,
+      applications: [],
     });
     const found = await db.query("SELECT * FROM users WHERE username = 'u1'");
     expect(found.rows.length).toEqual(1);

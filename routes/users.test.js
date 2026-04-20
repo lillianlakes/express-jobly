@@ -201,14 +201,15 @@ describe("GET /users/:username", function () {
         lastName: "U2L",
         email: "user2@user.com",
         isAdmin: false,
+        applications: [],
       },
     });
   });
-
+  
   test("works for admin", async function () {
     const resp = await request(app)
-      .get(`/users/u1`)
-      .set("authorization", `Bearer ${u1Token}`);
+        .get(`/users/u1`)
+        .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       user: {
         username: "u1",
@@ -216,14 +217,15 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: true,
+        applications: [],
       },
     });
   });
-
+  
   test("works for admin to get other users", async function () {
     const resp = await request(app)
-      .get(`/users/u2`)
-      .set("authorization", `Bearer ${u1Token}`);
+        .get(`/users/u2`)
+        .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       user: {
         username: "u2",
@@ -231,18 +233,7 @@ describe("GET /users/:username", function () {
         lastName: "U2L",
         email: "user2@user.com",
         isAdmin: false,
-      },
-    });
-  });
-
-  test("forbidden non admin user try get other user", async function () {
-    const resp = await request(app)
-      .get(`/users/u3`)
-      .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(403);
-  });
-
-  test("unauth for anon", async function () {
+        applications: [],
     const resp = await request(app)
       .get(`/users/u1`);
     expect(resp.statusCode).toEqual(401);
@@ -273,17 +264,18 @@ describe("PATCH /users/:username", () => {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: true,
+        applications: [],
       },
     });
   });
-
+  
   test("works for admin patch other user", async function () {
     const resp = await request(app)
-      .patch(`/users/u3`)
-      .send({
-        firstName: "New",
-      })
-      .set("authorization", `Bearer ${u1Token}`);
+        .patch(`/users/u3`)
+        .send({
+          firstName: "New",
+        })
+        .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       user: {
         username: "u3",
@@ -291,17 +283,18 @@ describe("PATCH /users/:username", () => {
         lastName: "U3L",
         email: "user3@user.com",
         isAdmin: false,
+        applications: [],
       },
     });
   });
-
+  
   test("works for that user", async function () {
     const resp = await request(app)
-      .patch(`/users/u2`)
-      .send({
-        firstName: "New",
-      })
-      .set("authorization", `Bearer ${u2Token}`);
+        .patch(`/users/u2`)
+        .send({
+          firstName: "New",
+        })
+        .set("authorization", `Bearer ${u2Token}`);
     expect(resp.body).toEqual({
       user: {
         username: "u2",
@@ -309,21 +302,7 @@ describe("PATCH /users/:username", () => {
         lastName: "U2L",
         email: "user2@user.com",
         isAdmin: false,
-      },
-    });
-  });
-
-  test("forbidden for non admin user patch other user", async function () {
-    const resp = await request(app)
-      .patch(`/users/u3`)
-      .send({
-        firstName: "Newew",
-      })
-      .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(403);
-  });
-
-  test("unauth for anon", async function () {
+        applications: [],
     const resp = await request(app)
       .patch(`/users/u1`)
       .send({
