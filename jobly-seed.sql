@@ -368,3 +368,190 @@ VALUES ('Conservator, furniture', 110000, 0, 'watson-davis'),
        ('Learning disability nurse', 66000, NULL, 'ayala-buchanan'),
        ('Research scientist (medical)', 175000, NULL, 'norman-harvey'),
        ('Accommodation manager', 126000, NULL, 'mejia-scott-ryan');
+
+-- Enrich seeded copy with realistic, domain-specific company descriptions.
+
+UPDATE companies AS c
+SET description = CASE
+        WHEN c.handle IN ('bauer-gallagher', 'edwards-lee-reese', 'reynolds-greene', 'mueller-moore', 'pugh-ltd') THEN
+                c.name || ' is a risk and compliance technology company helping insurers and enterprise teams automate underwriting, claims workflows, and regulatory reporting.'
+        WHEN c.handle IN ('hall-davis', 'watson-davis', 'foster-rice', 'martinez-daniels', 'weber-hernandez') THEN
+                c.name || ' develops climate and energy solutions focused on grid reliability, emissions visibility, and asset performance analytics for operators and municipalities.'
+        WHEN c.handle IN ('sellers-bryant', 'smith-llc', 'ingram-ferguson-rubio', 'stone-stewart', 'gillespie-smith') THEN
+                c.name || ' builds financial infrastructure products for payments, treasury operations, and fraud prevention used by growth-stage and enterprise finance teams.'
+        WHEN c.handle IN ('norman-harvey', 'garcia-ray', 'hall-mills', 'humphrey-llc', 'graham-herring-lane') THEN
+                c.name || ' is a healthcare and life sciences organization delivering data-driven patient programs, clinical tooling, and operational systems for care teams.'
+        WHEN c.handle IN ('anderson-arias-morrow', 'jackson-sons', 'logan-miller', 'arnold-berger-townsend', 'jackson-davila-conley') THEN
+                c.name || ' creates digital media products and content operations platforms for publishing, streaming, and creator-led audiences at global scale.'
+        WHEN c.handle IN ('russo-gillespie-conrad', 'hudson-inc', 'burton-ltd', 'robbins-marsh-martin', 'salas-group') THEN
+                c.name || ' operates logistics and industrial systems that optimize procurement, fleet visibility, warehouse throughput, and service reliability.'
+        WHEN c.handle IN ('mejia-scott-ryan', 'willis-henson-miller', 'thomas-sons', 'rivas-llc', 'owen-newton') THEN
+                c.name || ' partners with education and public-sector institutions to modernize service delivery, digital operations, and citizen-facing platforms.'
+        WHEN c.handle IN ('baker-santos', 'morgan-sullivan', 'moore-plc', 'ayala-buchanan', 'carr-wells-jones') THEN
+                c.name || ' supports agriculture and food supply organizations with field intelligence, sustainability planning, and resilient distribution tooling.'
+        WHEN c.handle IN ('boyd-evans', 'mitchell-brown', 'miller-woods-hernandez', 'wiggins-frederick-boyer', 'taylor-yu-lee') THEN
+                c.name || ' is a product-led software company delivering collaboration, analytics, and workflow automation for distributed teams.'
+        ELSE
+                c.name || ' is a growth-stage technology business focused on modernizing core workflows with reliable data systems and thoughtful user experience.'
+END;
+
+-- Rewrite all 200 job titles with realistic, market-aligned role copy.
+
+WITH ranked_jobs AS (
+        SELECT id,
+                                 company_handle,
+                                 ROW_NUMBER() OVER (PARTITION BY company_handle ORDER BY id) AS rn
+        FROM jobs
+),
+job_domains AS (
+        SELECT rj.id,
+                                 rj.rn,
+                                 CASE
+                                         WHEN rj.company_handle IN ('bauer-gallagher', 'edwards-lee-reese', 'reynolds-greene', 'mueller-moore', 'pugh-ltd') THEN 'risk'
+                                         WHEN rj.company_handle IN ('hall-davis', 'watson-davis', 'foster-rice', 'martinez-daniels', 'weber-hernandez') THEN 'climate'
+                                         WHEN rj.company_handle IN ('sellers-bryant', 'smith-llc', 'ingram-ferguson-rubio', 'stone-stewart', 'gillespie-smith') THEN 'fintech'
+                                         WHEN rj.company_handle IN ('norman-harvey', 'garcia-ray', 'hall-mills', 'humphrey-llc', 'graham-herring-lane') THEN 'health'
+                                         WHEN rj.company_handle IN ('anderson-arias-morrow', 'jackson-sons', 'logan-miller', 'arnold-berger-townsend', 'jackson-davila-conley') THEN 'media'
+                                         WHEN rj.company_handle IN ('russo-gillespie-conrad', 'hudson-inc', 'burton-ltd', 'robbins-marsh-martin', 'salas-group') THEN 'logistics'
+                                         WHEN rj.company_handle IN ('mejia-scott-ryan', 'willis-henson-miller', 'thomas-sons', 'rivas-llc', 'owen-newton') THEN 'public'
+                                         WHEN rj.company_handle IN ('baker-santos', 'morgan-sullivan', 'moore-plc', 'ayala-buchanan', 'carr-wells-jones') THEN 'agri'
+                                         WHEN rj.company_handle IN ('boyd-evans', 'mitchell-brown', 'miller-woods-hernandez', 'wiggins-frederick-boyer', 'taylor-yu-lee') THEN 'saas'
+                                         ELSE 'general'
+                                 END AS domain
+        FROM ranked_jobs rj
+)
+UPDATE jobs AS j
+SET title = CASE jd.domain
+        WHEN 'risk' THEN
+                (ARRAY[
+                        'Senior Risk Analytics Engineer',
+                        'Insurance Product Manager',
+                        'Fraud Detection Data Scientist',
+                        'Compliance Operations Lead',
+                        'Claims Platform Software Engineer',
+                        'Regulatory Reporting Analyst',
+                        'Enterprise Account Executive, Insurance',
+                        'Solutions Architect, Risk Systems',
+                        'Underwriting Workflow Specialist',
+                        'Technical Program Manager, Compliance'
+                ])[((jd.rn - 1) % 10) + 1]
+        WHEN 'climate' THEN
+                (ARRAY[
+                        'Renewable Energy Systems Engineer',
+                        'Grid Reliability Data Analyst',
+                        'Climate Intelligence Product Manager',
+                        'Geospatial Data Engineer',
+                        'Field Operations Manager, Energy',
+                        'Emissions Reporting Specialist',
+                        'Senior Backend Engineer, IoT Platforms',
+                        'Customer Success Manager, Utilities',
+                        'Energy Market Research Analyst',
+                        'Site Reliability Engineer, Climate Platform'
+                ])[((jd.rn - 1) % 10) + 1]
+        WHEN 'fintech' THEN
+                (ARRAY[
+                        'Senior Backend Engineer, Payments',
+                        'Fraud and Risk Product Analyst',
+                        'Treasury Operations Manager',
+                        'Payment Integrations Engineer',
+                        'Financial Data Platform Engineer',
+                        'AML Compliance Specialist',
+                        'Product Designer, Fintech Workflows',
+                        'Customer Success Manager, Enterprise Finance',
+                        'Revenue Operations Analyst',
+                        'Technical Account Manager, Fintech'
+                ])[((jd.rn - 1) % 10) + 1]
+        WHEN 'health' THEN
+                (ARRAY[
+                        'Clinical Data Analyst',
+                        'Healthcare Product Manager',
+                        'Patient Experience Program Lead',
+                        'Senior Full Stack Engineer, Health Platform',
+                        'Care Operations Coordinator',
+                        'Health Informatics Specialist',
+                        'Implementation Manager, Clinical Systems',
+                        'Research Operations Associate',
+                        'Security Engineer, Healthcare Compliance',
+                        'Medical Content and Education Lead'
+                ])[((jd.rn - 1) % 10) + 1]
+        WHEN 'media' THEN
+                (ARRAY[
+                        'Senior Frontend Engineer, Media Platform',
+                        'Creator Partnerships Manager',
+                        'Audience Growth Analyst',
+                        'Video Platform Product Manager',
+                        'Content Operations Specialist',
+                        'Data Engineer, Personalization',
+                        'Lifecycle Marketing Manager',
+                        'UX Researcher, Consumer Media',
+                        'Platform Reliability Engineer, Streaming',
+                        'Ad Operations Analyst'
+                ])[((jd.rn - 1) % 10) + 1]
+        WHEN 'logistics' THEN
+                (ARRAY[
+                        'Supply Chain Analytics Manager',
+                        'Warehouse Systems Engineer',
+                        'Dispatch Operations Lead',
+                        'Logistics Product Manager',
+                        'Procurement Data Analyst',
+                        'Route Optimization Engineer',
+                        'Fleet Operations Coordinator',
+                        'Enterprise Implementation Manager',
+                        'Customer Support Manager, Logistics SaaS',
+                        'Integration Engineer, Warehouse Platforms'
+                ])[((jd.rn - 1) % 10) + 1]
+        WHEN 'public' THEN
+                (ARRAY[
+                        'Civic Technology Product Manager',
+                        'Public Services Implementation Specialist',
+                        'Education Data Analyst',
+                        'Program Manager, Digital Transformation',
+                        'Senior Software Engineer, Gov Platform',
+                        'Community Success Manager',
+                        'Policy Operations Analyst',
+                        'Accessibility and Inclusion Specialist',
+                        'Technical Writer, Public Sector Workflows',
+                        'Solutions Consultant, Education Systems'
+                ])[((jd.rn - 1) % 10) + 1]
+        WHEN 'agri' THEN
+                (ARRAY[
+                        'Agricultural Data Scientist',
+                        'Farm Operations Manager',
+                        'Supply Forecasting Analyst',
+                        'Sustainability Program Manager',
+                        'Senior Backend Engineer, AgTech',
+                        'Field Success Specialist',
+                        'Product Manager, Food Traceability',
+                        'Quality Assurance Manager, Food Systems',
+                        'Partnerships Manager, Grower Networks',
+                        'Operations Analyst, Distribution Planning'
+                ])[((jd.rn - 1) % 10) + 1]
+        WHEN 'saas' THEN
+                (ARRAY[
+                        'Senior Full Stack Engineer',
+                        'Platform Product Manager',
+                        'Customer Success Manager, Mid-Market',
+                        'Growth Marketing Manager',
+                        'Sales Engineer, Enterprise Accounts',
+                        'UX Designer, B2B Workflows',
+                        'Data Analyst, Product Insights',
+                        'Technical Program Manager',
+                        'Security and Compliance Engineer',
+                        'Revenue Operations Specialist'
+                ])[((jd.rn - 1) % 10) + 1]
+        ELSE
+                (ARRAY[
+                        'Software Engineer',
+                        'Product Manager',
+                        'Data Analyst',
+                        'Customer Success Specialist',
+                        'Implementation Manager',
+                        'Operations Coordinator',
+                        'Technical Account Manager',
+                        'UX Designer',
+                        'Business Systems Analyst',
+                        'Program Manager'
+                ])[((jd.rn - 1) % 10) + 1]
+END
+FROM job_domains jd
+WHERE j.id = jd.id;
