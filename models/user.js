@@ -388,12 +388,14 @@ class User {
     );
 
     const allJobsRes = await db.query(
-      `SELECT id,
-              title,
-              salary,
-              equity,
-              company_handle
-       FROM public.jobs`,
+      `SELECT j.id,
+              j.title,
+              j.salary,
+              j.equity,
+              j.company_handle,
+              c.name AS company_name
+       FROM public.jobs AS j
+       JOIN public.companies AS c ON j.company_handle = c.handle`,
     );
 
     const appliedJobs = appliedRes.rows;
@@ -432,6 +434,7 @@ class User {
           id: job.id,
           title: job.title,
           companyHandle: job.company_handle,
+          companyName: job.company_name,
           salary: job.salary,
           equity: job.equity,
           score,

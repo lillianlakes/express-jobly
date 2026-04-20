@@ -57,6 +57,7 @@ describe("GET /ai/recommendations/:username", function () {
           id: expect.any(Number),
           title: expect.any(String),
           companyHandle: expect.any(String),
+          companyName: expect.any(String),
           score: expect.any(Number),
           reasons: expect.any(Array),
         }),
